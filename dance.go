@@ -15,9 +15,9 @@ type Matrix struct {
 // all other nodes are linked. According to the algorithm, only the left and right
 // values are used for the root element.
 func New() *Matrix {
-	n := new(Matrix)
-	n.initRoot()
-	return n
+	r := new(Matrix)
+	r.initRoot()
+	return r
 }
 
 func (r *Matrix) initRoot() {
