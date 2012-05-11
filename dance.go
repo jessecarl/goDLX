@@ -10,3 +10,18 @@ type Matrix struct {
 	optional      bool // optional columns do not have to be satisfied but can be only once
 	head          bool // checked for the root or head node
 }
+
+// New returns an empty matrix. This creates a single head or root node to which
+// all other nodes are linked. According to the algorithm, only the left and right
+// values are used for the root element.
+func New() *Matrix {
+	n := new(Matrix)
+	n.initRoot()
+	return n
+}
+
+func (r *Matrix) initRoot() {
+	r.L = r
+	r.R = r
+	r.head = true
+}
