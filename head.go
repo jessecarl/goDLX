@@ -43,6 +43,8 @@ func (h *Head) SetLft(n Node) (Node, error) {
 		if h != n {
 			return nil, errors.New(ERROR_HEAD_SET_HORZ)
 		}
+	case *Column:
+		// do nothing, we're good
 	default:
 		return nil, errors.New(ERROR_HEAD_SET_HORZ)
 	}
@@ -63,6 +65,8 @@ func (h *Head) SetRgt(n Node) (Node, error) {
 		if h != n {
 			return nil, errors.New(ERROR_HEAD_SET_HORZ)
 		}
+	case *Column:
+		// do nothing, we're good
 	default:
 		return nil, errors.New(ERROR_HEAD_SET_HORZ)
 	}
