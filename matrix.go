@@ -1,106 +1,106 @@
 package goDLX
 
-// The Node interface navigates a sparse matrix.
+// The node interface navigates a sparse matrix.
 // Any type implementing a 2-dimensional doubly-linked list satisfies this.
 // (despite the convention being that interfaces have the -er suffix, this special case
 // can't do that without being entirely unclear)
-type Node interface {
-	Lft() Node
-	SetLft(Node) (Node, error)
-	Rgt() Node
-	SetRgt(Node) (Node, error)
-	Up() Node
-	SetUp(Node) (Node, error)
-	Dn() Node
-	SetDn(Node) (Node, error)
-	Col() Node
+type node interface {
+	lft() node
+	setLft(node) (node, error)
+	rgt() node
+	setRgt(node) (node, error)
+	up() node
+	setUp(node) (node, error)
+	dn() node
+	setDn(node) (node, error)
+	col() node
 }
 
-// LinkHorz links a *new* left Node to an *existing* right Node as shown:
+// linkHorz links a *new* left node to an *existing* right node as shown:
 //     +---+  +---+  +---+
 //     |   |  |   |  |   |
-//     |   |  |lft|  |rgt|
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |  |   |->|   |
-//     |   |  |lft|  |rgt|
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |->|   |->|   |
-//     |   |  |lft|  |rgt|
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |->|   |->|   |
-//     |   |  |lft|  |rgt|
+//     |   |  | a |  | b |
 //     |   |<-|   |<-|   |
 //     +---+  +---+  +---+
 // Only need a single horizontal link adding method because these are circular links.
-// If one wants to add a Node to the right instead of left, simply use
-// LinkHorz(lft, rgt.Rgt())
-func LinkHorz(lft, rgt Node) error {
-	if lft == rgt {
+// If one wants to add a node to the right instead of left, simply use
+// linkHorz( a , rgt.rgt())
+func linkHorz(a, b node) error {
+	if a == b {
 		// not an error, but nothing happens
 		return nil
 	}
-	if _, err := lft.SetLft(rgt.Lft()); err != nil {
+	if _, err := a.setLft(b.lft()); err != nil {
 		return err
 	}
-	if _, err := lft.SetRgt(rgt); err != nil {
+	if _, err := a.setRgt(b); err != nil {
 		return err
 	}
-	if _, err := lft.Lft().SetRgt(lft); err != nil {
+	if _, err := a.lft().setRgt(a); err != nil {
 		return err
 	}
-	if _, err := lft.Rgt().SetLft(lft); err != nil {
+	if _, err := a.rgt().setLft(a); err != nil {
 		// undo our modification to the existing list
-		lft.Lft().SetRgt(rgt)
+		a.lft().setRgt(b)
 		return err
 	}
 	return nil
 }
 
-// LinkVert links a *new* up Node to and *existing* down Node as shown:
+// linkVert links a *new* up node to and *existing* down node as shown:
 //     +---+  +---+  +---+
 //     |   |  |   |  |   |
-//     |   |  |up |  |dn |
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |  |   |->|   |
-//     |   |  |up |  |dn |
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |->|   |->|   |
-//     |   |  |up |  |dn |
+//     |   |  | a |  | b |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |->|   |->|   |
-//     |   |  |up |  |dn |
+//     |   |  | a |  | b |
 //     |   |<-|   |<-|   |
 //     +---+  +---+  +---+
-// This is the vertical analog to the LinkHorz() function.
-func LinkVert(up, dn Node) error {
-	if up == dn {
+// This is the vertical analog to the linkHorz() function.
+func linkVert(a, b node) error {
+	if a == b {
 		// not an error, but nothing happens
 		return nil
 	}
-	if _, err := up.SetUp(dn.Up()); err != nil {
+	if _, err := a.setUp(b.up()); err != nil {
 		return err
 	}
-	if _, err := up.SetDn(dn); err != nil {
+	if _, err := a.setDn(b); err != nil {
 		return err
 	}
-	if _, err := up.Up().SetDn(up); err != nil {
+	if _, err := a.up().setDn(a); err != nil {
 		return err
 	}
-	if _, err := up.Dn().SetUp(up); err != nil {
+	if _, err := a.dn().setUp(a); err != nil {
 		// undo our modification to the existing list
-		up.Up().SetDn(dn)
+		a.up().setDn(b)
 		return err
 	}
 	return nil

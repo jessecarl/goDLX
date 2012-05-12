@@ -3,114 +3,114 @@ package goDLX
 import "errors"
 
 const (
-	ERROR_COLUMN_SET_HORZ = "Only Head or other Column can be left or right of Column"
-	ERROR_COLUMN_SET_VERT = "Only Element or Self can be above or below Column"
+	e_column_set_horz = "Only Head or other column can be left or right of column"
+	e_column_set_vert = "Only Element or Self can be above or below column"
 )
 
-type Column struct {
-	lft, rgt, up, dn Node
-	name             string
-	size             int  // tracks number of 1s in a column
-	optional         bool // set for optional columns
+type column struct {
+	left, right, upup, down node
+	name                    string
+	size                    int  // tracks number of 1s in a column
+	optional                bool // set for optional columns
 }
 
-// NewColumn creates an empty constraint column ready to add to a matrix
-func NewColumn(name string, optional bool) *Column {
-	c := new(Column)
+// newColumn creates an empty constraint column ready to add to a matrix
+func newColumn(name string, optional bool) *column {
+	c := new(column)
 	c.initColumn(name, optional)
 	return c
 }
 
-func (c *Column) initColumn(name string, optional bool) {
-	c.lft = c
-	c.rgt = c
-	c.up = c
-	c.dn = c
+func (c *column) initColumn(name string, optional bool) {
+	c.left = c
+	c.right = c
+	c.upup = c
+	c.down = c
 	c.name = name
 	c.optional = optional
 }
 
-// Lft returns the node to the left of the Column
-func (c *Column) Lft() Node {
-	return c.lft
+// lft returns the node to the left of the column
+func (c *column) lft() node {
+	return c.left
 }
 
-// SetLft sets a node to the left of the Column node.
-func (c *Column) SetLft(n Node) (Node, error) {
+// setLft sets a node to the left of the column node.
+func (c *column) setLft(n node) (node, error) {
 	switch n.(type) {
 	case *Head:
 		// totally allowed
-	case *Column:
+	case *column:
 		if n == c {
-			return nil, errors.New(ERROR_COLUMN_SET_HORZ)
+			return nil, errors.New(e_column_set_horz)
 		}
 	default:
-		return nil, errors.New(ERROR_COLUMN_SET_HORZ)
+		return nil, errors.New(e_column_set_horz)
 	}
-	c.lft = n
+	c.left = n
 	return n, nil
 }
 
-// Rgt returns the node to the right of the Column
-func (c *Column) Rgt() Node {
-	return c.rgt
+// rgt returns the node to the right of the column
+func (c *column) rgt() node {
+	return c.right
 }
 
-// SetRgt sets the node to the right of the Column
-func (c *Column) SetRgt(n Node) (Node, error) {
+// setRgt sets the node to the right of the column
+func (c *column) setRgt(n node) (node, error) {
 	switch n.(type) {
 	case *Head:
 		// totally allowed
-	case *Column:
+	case *column:
 		if n == c {
-			return nil, errors.New(ERROR_COLUMN_SET_HORZ)
+			return nil, errors.New(e_column_set_horz)
 		}
 	default:
-		return nil, errors.New(ERROR_COLUMN_SET_HORZ)
+		return nil, errors.New(e_column_set_horz)
 	}
-	c.rgt = n
+	c.right = n
 	return n, nil
 }
 
-// Up returns the node above the Column
-func (c *Column) Up() Node {
-	return c.up
+// up returns the node above the column
+func (c *column) up() node {
+	return c.upup
 }
 
-// SetUp returns the Column itself unmodified as Column nodes are only horizontally linked
-func (c *Column) SetUp(n Node) (Node, error) {
+// setUp returns the column itself unmodified as column nodes are only horizontally linked
+func (c *column) setUp(n node) (node, error) {
 	switch n.(type) {
-	case *Column:
+	case *column:
 		if n != c {
-			return nil, errors.New(ERROR_COLUMN_SET_VERT)
+			return nil, errors.New(e_column_set_vert)
 		}
 	default:
-		return nil, errors.New(ERROR_COLUMN_SET_VERT)
+		return nil, errors.New(e_column_set_vert)
 	}
-	c.up = n
+	c.upup = n
 	return c, nil
 }
 
-// Dn returns the Column itself as Column nodes are only horizontally linked
-func (c *Column) Dn() Node {
+// dn returns the column itself as column nodes are only horizontally linked
+func (c *column) dn() node {
 	return c
 }
 
-// SetDn returns the Column itself unmodified as Column nodes are only horizontally linked
-func (c *Column) SetDn(n Node) (Node, error) {
+// setDn returns the column itself unmodified as column nodes are only horizontally linked
+func (c *column) setDn(n node) (node, error) {
 	switch n.(type) {
-	case *Column:
+	case *column:
 		if n != c {
-			return nil, errors.New(ERROR_COLUMN_SET_VERT)
+			return nil, errors.New(e_column_set_vert)
 		}
 	default:
-		return nil, errors.New(ERROR_COLUMN_SET_VERT)
+		return nil, errors.New(e_column_set_vert)
 	}
-	c.dn = n
+	c.down = n
 	return c, nil
 }
 
-// Col returns the Column itself as it is the header in the column list
-func (c *Column) Col() Node {
+// col returns the column itself as it is the header in the column list
+func (c *column) col() node {
 	return c
 }

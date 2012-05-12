@@ -6,67 +6,67 @@ import "testing"
 func TestLinkHorzHH(t *testing.T) {
 	hL := New()
 	hR := New()
-	if err := LinkHorz(hL, hR); err == nil {
-		t.Errorf("LinkHorz(Head, Head): Head cannot link to another Head")
+	if err := linkHorz(hL, hR); err == nil {
+		t.Errorf("linkHorz(Head, Head): Head cannot link to another Head")
 	}
-	if err := LinkHorz(hL, hL); err != nil {
+	if err := linkHorz(hL, hL); err != nil {
 		t.Error(err)
 	}
 }
 
-// TestLinkHorz Head -> Column
+// TestLinkHorz Head -> column
 func TestLinkHorzHC(t *testing.T) {
 	h := New()
-	c := NewColumn("", false)
-	if err := LinkHorz(h, c); err != nil {
+	c := newColumn("", false)
+	if err := linkHorz(h, c); err != nil {
 		t.Error(err)
 	} else if !assertLft(c, h) || !assertRgt(h, c) {
-		t.Errorf("LinkHorz(Head, Column): Link not created")
+		t.Errorf("linkHorz(Head, column): Link not created")
 	} else if !assertCircleLft(h, 2) {
-		t.Errorf("LinkHorz(Head, Column): List no longer circles left")
+		t.Errorf("linkHorz(Head, column): List no longer circles left")
 	} else if !assertCircleRgt(h, 2) {
-		t.Errorf("LinkHorz(Head, Column): List no longer circles right")
+		t.Errorf("linkHorz(Head, column): List no longer circles right")
 	}
 }
 
-// TestLinkHorz Column -> Head
+// TestLinkHorz column -> Head
 func TestLinkHorzCH(t *testing.T) {
 	h := New()
-	c := NewColumn("", false)
-	if err := LinkHorz(c, h); err != nil {
+	c := newColumn("", false)
+	if err := linkHorz(c, h); err != nil {
 		t.Error(err)
 	} else if !assertLft(h, c) || !assertRgt(c, h) {
-		t.Errorf("LinkHorz(Column, Head): Link not created")
+		t.Errorf("linkHorz(column, Head): Link not created")
 	} else if !assertCircleLft(c, 2) {
-		t.Errorf("LinkHorz(Column, Head): List no longer circles left")
+		t.Errorf("linkHorz(column, Head): List no longer circles left")
 	} else if !assertCircleRgt(c, 2) {
-		t.Errorf("LinkHorz(Column, Head): List no longer circles right")
+		t.Errorf("linkHorz(column, Head): List no longer circles right")
 	}
 }
 
-// TestLinkHorz Column -> Column
+// TestLinkHorz column -> column
 func TestLinkHorzCC(t *testing.T) {
 	lims := []int{2, 3, 4, 5}
-	c := NewColumn("", false)
-	if err := LinkHorz(c, c); err != nil {
+	c := newColumn("", false)
+	if err := linkHorz(c, c); err != nil {
 		t.Error(err)
 	} else if !assertLft(c, c) || !assertRgt(c, c) {
-		t.Errorf("LinkHorz(Column, Column): Link not created")
+		t.Errorf("linkHorz(column, column): Link not created")
 	} else if !assertCircleLft(c, 1) {
-		t.Errorf("LinkHorz(Column, Column): List no longer circles left")
+		t.Errorf("linkHorz(column, column): List no longer circles left")
 	} else if !assertCircleRgt(c, 1) {
-		t.Errorf("LinkHorz(Column, Column): List no longer circles right")
+		t.Errorf("linkHorz(column, column): List no longer circles right")
 	}
 	for _, i := range lims {
-		n := NewColumn(string(i), false)
-		if err := LinkHorz(c, n); err != nil {
+		n := newColumn(string(i), false)
+		if err := linkHorz(c, n); err != nil {
 			t.Error(err)
 		} else if !assertLft(n, c) || !assertRgt(c, n) {
-			t.Errorf("LinkHorz(Column, Column): Link not created")
+			t.Errorf("linkHorz(column, column): Link not created")
 		} else if !assertCircleLft(c, i) {
-			t.Errorf("LinkHorz(Column, Column): List no longer circles left")
+			t.Errorf("linkHorz(column, column): List no longer circles left")
 		} else if !assertCircleRgt(c, i) {
-			t.Errorf("LinkHorz(Column, Column): List no longer circles right")
+			t.Errorf("linkHorz(column, column): List no longer circles right")
 		}
 	}
 }
@@ -75,67 +75,67 @@ func TestLinkHorzCC(t *testing.T) {
 func TestLinkVertHH(t *testing.T) {
 	hU := New()
 	hD := New()
-	if err := LinkVert(hU, hD); err == nil {
-		t.Errorf("LinkVert(Head, Head): Head cannot link vertically")
+	if err := linkVert(hU, hD); err == nil {
+		t.Errorf("linkVert(Head, Head): Head cannot link vertically")
 	}
 }
 
-// TestLinkVert Head -> Column
+// TestLinkVert Head -> column
 func TestLinkVertHC(t *testing.T) {
 	h := New()
-	c := NewColumn("", false)
-	if err := LinkVert(h, c); err == nil {
-		t.Errorf("LinkVert(Head, Column): Head cannot link vertically")
+	c := newColumn("", false)
+	if err := linkVert(h, c); err == nil {
+		t.Errorf("linkVert(Head, column): Head cannot link vertically")
 	}
 }
 
-// TestLinkVert Column -> Head
+// TestLinkVert column -> Head
 func TestLinkVertCH(t *testing.T) {
 	h := New()
-	c := NewColumn("", false)
-	if err := LinkVert(c, h); err == nil {
-		t.Errorf("LinkVert(Column, Head): Head cannot link vertically")
+	c := newColumn("", false)
+	if err := linkVert(c, h); err == nil {
+		t.Errorf("linkVert(column, Head): Head cannot link vertically")
 	}
 }
 
-// TestLinkVert Column -> Column
+// TestLinkVert column -> column
 func TestLinkVertCC(t *testing.T) {
-	c := NewColumn("", false)
-	co := NewColumn("", false)
-	if err := LinkVert(c, c); err != nil {
+	c := newColumn("", false)
+	co := newColumn("", false)
+	if err := linkVert(c, c); err != nil {
 		t.Error(err)
 	} else if !assertUp(c, c) || !assertDn(c, c) {
-		t.Errorf("LinkVert(Column, Column): Link not created")
+		t.Errorf("linkVert(column, column): Link not created")
 	} else if !assertCircleUp(c, 1) {
-		t.Errorf("LinkVert(Column, Column): List no longer circles up")
+		t.Errorf("linkVert(column, column): List no longer circles up")
 	} else if !assertCircleDn(c, 1) {
-		t.Errorf("LinkVert(Column, Column): List no longer circles down")
+		t.Errorf("linkVert(column, column): List no longer circles down")
 	}
-	if err := LinkVert(c, co); err == nil {
-		t.Errorf("LinkVert(Column, Column): Column cannot link vertically to another Column")
+	if err := linkVert(c, co); err == nil {
+		t.Errorf("linkVert(column, column): column cannot link vertically to another column")
 	}
 }
 
 // Assert functions
-func assertLft(check Node, expected Node) bool {
-	return check.Lft() == expected
+func assertLft(check node, expected node) bool {
+	return check.lft() == expected
 }
 
-func assertRgt(check Node, expected Node) bool {
-	return check.Rgt() == expected
+func assertRgt(check node, expected node) bool {
+	return check.rgt() == expected
 }
 
-func assertUp(check Node, expected Node) bool {
-	return check.Up() == expected
+func assertUp(check node, expected node) bool {
+	return check.up() == expected
 }
 
-func assertDn(check Node, expected Node) bool {
-	return check.Dn() == expected
+func assertDn(check node, expected node) bool {
+	return check.dn() == expected
 }
 
-func assertCircleLft(n Node, lim int) bool {
+func assertCircleLft(n node, lim int) bool {
 	count := 0
-	for i := n.Lft(); i != n; i = i.Lft() {
+	for i := n.lft(); i != n; i = i.lft() {
 		count++
 		if i == nil || count >= lim {
 			return false
@@ -144,9 +144,9 @@ func assertCircleLft(n Node, lim int) bool {
 	return true
 }
 
-func assertCircleRgt(n Node, lim int) bool {
+func assertCircleRgt(n node, lim int) bool {
 	count := 0
-	for i := n.Rgt(); i != n; i = i.Rgt() {
+	for i := n.rgt(); i != n; i = i.rgt() {
 		count++
 		if i == nil || count >= lim {
 			return false
@@ -155,9 +155,9 @@ func assertCircleRgt(n Node, lim int) bool {
 	return true
 }
 
-func assertCircleUp(n Node, lim int) bool {
+func assertCircleUp(n node, lim int) bool {
 	count := 0
-	for i := n.Up(); i != n; i = i.Up() {
+	for i := n.up(); i != n; i = i.up() {
 		count++
 		if i == nil || count >= lim {
 			return false
@@ -166,9 +166,9 @@ func assertCircleUp(n Node, lim int) bool {
 	return true
 }
 
-func assertCircleDn(n Node, lim int) bool {
+func assertCircleDn(n node, lim int) bool {
 	count := 0
-	for i := n.Dn(); i != n; i = i.Dn() {
+	for i := n.dn(); i != n; i = i.dn() {
 		count++
 		if i == nil || count >= lim {
 			return false
