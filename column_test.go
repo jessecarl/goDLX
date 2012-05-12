@@ -11,13 +11,13 @@ func TestNewColumn(t *testing.T) {
 		for _, b := range []bool{true, false} {
 			if c := NewColumn(name, b); c == nil {
 				t.Errorf("NewColumn(): Did not return a valid Column Node")
-			} else if !assertCircleLft(c) {
+			} else if !assertCircleLft(c, 1) {
 				t.Errorf("NewColumn(): Column not circular to left")
-			} else if !assertCircleRgt(c) {
+			} else if !assertCircleRgt(c, 1) {
 				t.Errorf("NewColumn(): Column not circular to right")
-			} else if !assertCircleUp(c) {
+			} else if !assertCircleUp(c, 1) {
 				t.Errorf("NewColumn(): Column not circular up")
-			} else if !assertCircleDn(c) {
+			} else if !assertCircleDn(c, 1) {
 				t.Errorf("NewColumn(): Column not circular down")
 			}
 		}

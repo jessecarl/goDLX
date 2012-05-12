@@ -9,10 +9,10 @@ func TestNew(t *testing.T) {
 	if h == nil {
 		t.Errorf("New(): Did not return a valid Head node")
 	}
-	if !assertCircleLft(h) {
+	if !assertCircleLft(h, 1) {
 		t.Errorf("New(): Head not circular to the left")
 	}
-	if !assertCircleRgt(h) {
+	if !assertCircleRgt(h, 1) {
 		t.Errorf("New(): Head not circular to the right")
 	}
 }
