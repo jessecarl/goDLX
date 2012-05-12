@@ -2,123 +2,117 @@ package goDLX
 
 import "testing"
 
-// TestLinkLft Head -> Head
-func TestLinkLftHH(t *testing.T) {
+// TestLinkHorz Head -> Head
+func TestLinkHorzHH(t *testing.T) {
 	hL := New()
 	hR := New()
-	if err := LinkLft(hL, hR); err == nil {
-		t.Errorf("LinkLft(Head, Head): Head cannot link to another Head")
+	if err := LinkHorz(hL, hR); err == nil {
+		t.Errorf("LinkHorz(Head, Head): Head cannot link to another Head")
 	}
-	if err := LinkLft(hL, hL); err != nil {
+	if err := LinkHorz(hL, hL); err != nil {
 		t.Error(err)
 	}
 }
 
-// TestLinkLft Head -> Column
-func TestLinkLftHC(t *testing.T) {
+// TestLinkHorz Head -> Column
+func TestLinkHorzHC(t *testing.T) {
 	h := New()
 	c := NewColumn("", false)
-	if err := LinkLft(h, c); err != nil {
+	if err := LinkHorz(h, c); err != nil {
 		t.Error(err)
 	} else if !assertLft(c, h) || !assertRgt(h, c) {
-		t.Errorf("LinkLft(Head, Column): Link not created")
+		t.Errorf("LinkHorz(Head, Column): Link not created")
 	} else if !assertCircleLft(h, 2) {
-		t.Errorf("LinkLft(Head, Column): List no longer circles left")
+		t.Errorf("LinkHorz(Head, Column): List no longer circles left")
 	} else if !assertCircleRgt(h, 2) {
-		t.Errorf("LinkLft(Head, Column): List no longer circles right")
+		t.Errorf("LinkHorz(Head, Column): List no longer circles right")
 	}
 }
 
-// TestLinkLft Column -> Head
-func TestLinkLftCH(t *testing.T) {
+// TestLinkHorz Column -> Head
+func TestLinkHorzCH(t *testing.T) {
 	h := New()
 	c := NewColumn("", false)
-	if err := LinkLft(c, h); err != nil {
+	if err := LinkHorz(c, h); err != nil {
 		t.Error(err)
 	} else if !assertLft(h, c) || !assertRgt(c, h) {
-		t.Errorf("LinkLft(Column, Head): Link not created")
+		t.Errorf("LinkHorz(Column, Head): Link not created")
 	} else if !assertCircleLft(c, 2) {
-		t.Errorf("LinkLft(Column, Head): List no longer circles left")
+		t.Errorf("LinkHorz(Column, Head): List no longer circles left")
 	} else if !assertCircleRgt(c, 2) {
-		t.Errorf("LinkLft(Column, Head): List no longer circles right")
+		t.Errorf("LinkHorz(Column, Head): List no longer circles right")
 	}
 }
 
-// TestLinkLft Column -> Column
-func TestLinkLftCC(t *testing.T) {
+// TestLinkHorz Column -> Column
+func TestLinkHorzCC(t *testing.T) {
 	lims := []int{2, 3, 4, 5}
 	c := NewColumn("", false)
+	if err := LinkHorz(c, c); err != nil {
+		t.Error(err)
+	} else if !assertLft(c, c) || !assertRgt(c, c) {
+		t.Errorf("LinkHorz(Column, Column): Link not created")
+	} else if !assertCircleLft(c, 1) {
+		t.Errorf("LinkHorz(Column, Column): List no longer circles left")
+	} else if !assertCircleRgt(c, 1) {
+		t.Errorf("LinkHorz(Column, Column): List no longer circles right")
+	}
 	for _, i := range lims {
 		n := NewColumn(string(i), false)
-		if err := LinkLft(c, n); err != nil {
+		if err := LinkHorz(c, n); err != nil {
 			t.Error(err)
 		} else if !assertLft(n, c) || !assertRgt(c, n) {
-			t.Errorf("LinkLft(Column, Column): Link not created")
+			t.Errorf("LinkHorz(Column, Column): Link not created")
 		} else if !assertCircleLft(c, i) {
-			t.Errorf("LinkLft(Column, Column): List no longer circles left")
+			t.Errorf("LinkHorz(Column, Column): List no longer circles left")
 		} else if !assertCircleRgt(c, i) {
-			t.Errorf("LinkLft(Column, Column): List no longer circles right")
+			t.Errorf("LinkHorz(Column, Column): List no longer circles right")
 		}
 	}
 }
 
-// TestLinkRgt Head -> Head
-func TestLinkRgtHH(t *testing.T) {
-	hL := New()
-	hR := New()
-	if err := LinkRgt(hR, hL); err == nil {
-		t.Errorf("LinkRgt(Head, Head): Head cannot link to another Head")
-	}
-	if err := LinkRgt(hR, hR); err != nil {
-		t.Error(err)
+// TestLinkVert Head -> Head
+func TestLinkVertHH(t *testing.T) {
+	hU := New()
+	hD := New()
+	if err := LinkVert(hU, hD); err == nil {
+		t.Errorf("LinkVert(Head, Head): Head cannot link vertically")
 	}
 }
 
-// TestLinkRgt Head -> Column
-func TestLinkRgtHC(t *testing.T) {
+// TestLinkVert Head -> Column
+func TestLinkVertHC(t *testing.T) {
 	h := New()
 	c := NewColumn("", false)
-	if err := LinkRgt(h, c); err != nil {
-		t.Error(err)
-	} else if !assertRgt(c, h) || !assertLft(h, c) {
-		t.Errorf("LinkRgt(Head, Column): Link not created")
-	} else if !assertCircleLft(h, 2) {
-		t.Errorf("LinkRgt(Head, Column): List no longer circles left")
-	} else if !assertCircleRgt(h, 2) {
-		t.Errorf("LinkRgt(Head, Column): List no longer circles right")
+	if err := LinkVert(h, c); err == nil {
+		t.Errorf("LinkVert(Head, Column): Head cannot link vertically")
 	}
 }
 
-// TestLinkRgt Column -> Head
-func TestLinkRgtCH(t *testing.T) {
+// TestLinkVert Column -> Head
+func TestLinkVertCH(t *testing.T) {
 	h := New()
 	c := NewColumn("", false)
-	if err := LinkRgt(c, h); err != nil {
-		t.Error(err)
-	} else if !assertRgt(h, c) || !assertLft(c, h) {
-		t.Errorf("LinkRgt(Column, Head): Link not created")
-	} else if !assertCircleLft(c, 2) {
-		t.Errorf("LinkRgt(Column, Head): List no longer circles left")
-	} else if !assertCircleRgt(c, 2) {
-		t.Errorf("LinkRgt(Column, Head): List no longer circles right")
+	if err := LinkVert(c, h); err == nil {
+		t.Errorf("LinkVert(Column, Head): Head cannot link vertically")
 	}
 }
 
-// TestLinkRgt Column -> Column
-func TestLinkRgtCC(t *testing.T) {
-	lims := []int{2, 3, 4, 5}
+// TestLinkVert Column -> Column
+func TestLinkVertCC(t *testing.T) {
 	c := NewColumn("", false)
-	for _, i := range lims {
-		n := NewColumn(string(i), false)
-		if err := LinkRgt(c, n); err != nil {
-			t.Error(err)
-		} else if !assertRgt(n, c) || !assertLft(c, n) {
-			t.Errorf("LinkRgt(Column, Column): Link not created")
-		} else if !assertCircleLft(c, i) {
-			t.Errorf("LinkRgt(Column, Column): List no longer circles left")
-		} else if !assertCircleRgt(c, i) {
-			t.Errorf("LinkRgt(Column, Column): List no longer circles right")
-		}
+	co := NewColumn("", false)
+	if err := LinkVert(c, c); err != nil {
+		t.Error(err)
+	} else if !assertUp(c, c) || !assertDn(c, c) {
+		t.Errorf("LinkVert(Column, Column): Link not created")
+	} else if !assertCircleUp(c, 1) {
+		t.Errorf("LinkVert(Column, Column): List no longer circles up")
+	} else if !assertCircleDn(c, 1) {
+		t.Errorf("LinkVert(Column, Column): List no longer circles down")
+	}
+	if err := LinkVert(c, co); err == nil {
+		t.Errorf("LinkVert(Column, Column): Column cannot link vertically to another Column")
 	}
 }
 

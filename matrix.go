@@ -16,7 +16,7 @@ type Node interface {
 	Col() Node
 }
 
-// LinkLft links a new left Node to an existing right Node as shown:
+// LinkHorz links a *new* left Node to an *existing* right Node as shown:
 //     +---+  +---+  +---+
 //     |   |  |   |  |   |
 //     |   |  |lft|  |rgt|
@@ -37,7 +37,10 @@ type Node interface {
 //     |   |  |lft|  |rgt|
 //     |   |<-|   |<-|   |
 //     +---+  +---+  +---+
-func LinkLft(lft, rgt Node) error {
+// Only need a single horizontal link adding method because these are circular links.
+// If one wants to add a Node to the right instead of left, simply use
+// LinkHorz(lft, rgt.Rgt())
+func LinkHorz(lft, rgt Node) error {
 	if lft == rgt {
 		// not an error, but nothing happens
 		return nil
@@ -59,40 +62,45 @@ func LinkLft(lft, rgt Node) error {
 	return nil
 }
 
-// LinkRgt links a new right Node to an existing left Node as shown:
+// LinkVert links a *new* up Node to and *existing* down Node as shown:
 //     +---+  +---+  +---+
-//     |   |  |   |->|   |
-//     |lft|  |rgt|  |   |
 //     |   |  |   |  |   |
-//     +---+  +---+  +---+
-//     +---+  +---+  +---+
-//     |   |  |   |->|   |
-//     |lft|  |rgt|  |   |
+//     |   |  |up |  |dn |
 //     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |  |   |->|   |
-//     |lft|  |rgt|  |   |
-//     |   |<-|   |<-|   |
+//     |   |  |up |  |dn |
+//     |   |<-|   |  |   |
 //     +---+  +---+  +---+
 //     +---+  +---+  +---+
 //     |   |->|   |->|   |
-//     |lft|  |rgt|  |   |
+//     |   |  |up |  |dn |
+//     |   |<-|   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |->|   |->|   |
+//     |   |  |up |  |dn |
 //     |   |<-|   |<-|   |
 //     +---+  +---+  +---+
-func LinkRgt(rgt, lft Node) error {
-	if _, err := rgt.SetRgt(lft.Rgt()); err != nil {
+// This is the vertical analog to the LinkHorz() function.
+func LinkVert(up, dn Node) error {
+	if up == dn {
+		// not an error, but nothing happens
+		return nil
+	}
+	if _, err := up.SetUp(dn.Up()); err != nil {
 		return err
 	}
-	if _, err := rgt.SetLft(lft); err != nil {
+	if _, err := up.SetDn(dn); err != nil {
 		return err
 	}
-	if _, err := rgt.Rgt().SetLft(rgt); err != nil {
+	if _, err := up.Up().SetDn(up); err != nil {
 		return err
 	}
-	if _, err := rgt.Lft().SetRgt(rgt); err != nil {
+	if _, err := up.Dn().SetUp(up); err != nil {
 		// undo our modification to the existing list
-		rgt.Rgt().SetLft(lft)
+		up.Up().SetDn(dn)
 		return err
 	}
 	return nil
