@@ -131,3 +131,14 @@ func TestHeadCol(t *testing.T) {
 		t.Errorf("Head.col(): did not return self")
 	}
 }
+
+func TestHeadAddCol(t *testing.T) {
+	const colCount = 100
+	h := New()
+	for i := 0; i < colCount; i++ {
+		h.AddCol(string(i), false)
+		if !assertCircleLft(h, i+2) || !assertCircleRgt(h, i+2) {
+			t.Errorf("Head.AddCol(name, optional): List no longer circular")
+		}
+	}
+}

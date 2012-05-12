@@ -5,6 +5,7 @@ import "errors"
 const (
 	e_head_set_horz = "Only column of Self can be left or right of Head"
 	e_head_set_vert = "No nodes can be above or below Head"
+	e_head_locked   = "All Columns must be added before any Rows"
 )
 
 // Head nodes are the master column headers.
@@ -97,4 +98,19 @@ func (h *Head) setDn(n node) (node, error) {
 // col returns the Head itself as it is the header in the column list
 func (h *Head) col() node {
 	return h
+}
+
+////
+// Populating the Matrix
+////
+
+// AddCol adds a Column to the matrix.
+// Columns are added to the left of the head node.
+func (h *Head) AddCol(name string, optional bool) error {
+	if h.locked {
+		return errors.New(e_head_locked)
+	}
+	c := newColumn(name, optional)
+	err := linkHorz(c, h)
+	return err
 }
