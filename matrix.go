@@ -15,3 +15,85 @@ type Node interface {
 	SetDn(Node) (Node, error)
 	Col() Node
 }
+
+// LinkLft links a new left Node to an existing right Node as shown:
+//     +---+  +---+  +---+
+//     |   |  |   |  |   |
+//     |   |  |lft|  |rgt|
+//     |   |<-|   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |  |   |->|   |
+//     |   |  |lft|  |rgt|
+//     |   |<-|   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |->|   |->|   |
+//     |   |  |lft|  |rgt|
+//     |   |<-|   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |->|   |->|   |
+//     |   |  |lft|  |rgt|
+//     |   |<-|   |<-|   |
+//     +---+  +---+  +---+
+func LinkLft(lft, rgt Node) error {
+	if lft == rgt {
+		// not an error, but nothing happens
+		return nil
+	}
+	if _, err := lft.SetLft(rgt.Lft()); err != nil {
+		return err
+	}
+	if _, err := lft.SetRgt(rgt); err != nil {
+		return err
+	}
+	if _, err := lft.Lft().SetRgt(lft); err != nil {
+		return err
+	}
+	if _, err := lft.Rgt().SetLft(lft); err != nil {
+		// undo our modification to the existing list
+		lft.Lft().SetRgt(rgt)
+		return err
+	}
+	return nil
+}
+
+// LinkRgt links a new right Node to an existing left Node as shown:
+//     +---+  +---+  +---+
+//     |   |  |   |->|   |
+//     |lft|  |rgt|  |   |
+//     |   |  |   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |  |   |->|   |
+//     |lft|  |rgt|  |   |
+//     |   |<-|   |  |   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |  |   |->|   |
+//     |lft|  |rgt|  |   |
+//     |   |<-|   |<-|   |
+//     +---+  +---+  +---+
+//     +---+  +---+  +---+
+//     |   |->|   |->|   |
+//     |lft|  |rgt|  |   |
+//     |   |<-|   |<-|   |
+//     +---+  +---+  +---+
+func LinkRgt(rgt, lft Node) error {
+	if _, err := rgt.SetRgt(lft.Rgt()); err != nil {
+		return err
+	}
+	if _, err := rgt.SetLft(lft); err != nil {
+		return err
+	}
+	if _, err := rgt.Rgt().SetLft(rgt); err != nil {
+		return err
+	}
+	if _, err := rgt.Lft().SetRgt(rgt); err != nil {
+		// undo our modification to the existing list
+		rgt.Rgt().SetLft(lft)
+		return err
+	}
+	return nil
+}
