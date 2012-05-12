@@ -105,7 +105,9 @@ func (h *Head) col() node {
 ////
 
 // AddCol adds a Column to the matrix.
-// Columns are added to the left of the head node.
+// Each column has a name for reference and can be set to optional.
+// Where required columns have one and only one valid row, optional
+// columns have zero or one valid row.
 func (h *Head) AddCol(name string, optional bool) error {
 	if h.locked {
 		return errors.New(e_head_locked)
