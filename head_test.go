@@ -28,8 +28,9 @@ func TestHeadSetLft(t *testing.T) {
 	h := New()
 	oh := new(Head)
 	c := new(column)
+	e := new(element)
 	allowed := []node{h, c}
-	forbidden := []node{oh, nil}
+	forbidden := []node{oh, nil, e}
 	for _, i := range allowed {
 		if n, err := h.setLft(i); err != nil || n != i {
 			t.Error(i)
@@ -55,8 +56,9 @@ func TestHeadSetRgt(t *testing.T) {
 	h := New()
 	oh := new(Head)
 	c := new(column)
+	e := new(element)
 	allowed := []node{h, c}
-	forbidden := []node{oh, nil}
+	forbidden := []node{oh, nil, e}
 	for _, i := range allowed {
 		if n, err := h.setRgt(i); err != nil || n != i {
 			t.Error(i)
@@ -82,8 +84,9 @@ func TestHeadSetUp(t *testing.T) {
 	h := New()
 	oh := new(Head)
 	c := new(column)
+	e := new(element)
 	allowed := []node{}
-	forbidden := []node{h, c, oh, nil}
+	forbidden := []node{h, c, oh, e, nil}
 	for _, i := range allowed {
 		if n, err := h.setUp(i); err != nil || n != i {
 			t.Error(i)
@@ -109,8 +112,9 @@ func TestHeadSetDn(t *testing.T) {
 	h := New()
 	oh := new(Head)
 	c := new(column)
+	e := new(element)
 	allowed := []node{}
-	forbidden := []node{h, c, oh, nil}
+	forbidden := []node{h, c, oh, e, nil}
 	for _, i := range allowed {
 		if n, err := h.setDn(i); err != nil || n != i {
 			t.Error(i)
