@@ -84,16 +84,18 @@ func (c *column) setUp(n node) (node, error) {
 		if n != c {
 			return nil, errors.New(e_column_set_vert)
 		}
+	case *element:
+		// totally allowed
 	default:
 		return nil, errors.New(e_column_set_vert)
 	}
 	c.upup = n
-	return c, nil
+	return n, nil
 }
 
 // dn returns the column itself as column nodes are only horizontally linked
 func (c *column) dn() node {
-	return c
+	return c.down
 }
 
 // setDn returns the column itself unmodified as column nodes are only horizontally linked
@@ -103,11 +105,13 @@ func (c *column) setDn(n node) (node, error) {
 		if n != c {
 			return nil, errors.New(e_column_set_vert)
 		}
+	case *element:
+		// totally allowed
 	default:
 		return nil, errors.New(e_column_set_vert)
 	}
 	c.down = n
-	return c, nil
+	return n, nil
 }
 
 // col returns the column itself as it is the header in the column list

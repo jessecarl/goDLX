@@ -35,8 +35,9 @@ func TestColumnSetLft(t *testing.T) {
 	c := newColumn(testName, false)
 	h := New()
 	oc := new(column)
+	e := new(element)
 	allowed := []node{h, oc}
-	forbidden := []node{c, nil}
+	forbidden := []node{c, nil, e}
 	for _, i := range allowed {
 		if n, err := c.setLft(i); err != nil || n != i {
 			t.Error(i)
@@ -62,8 +63,9 @@ func TestColumnSetRgt(t *testing.T) {
 	c := newColumn(testName, false)
 	h := New()
 	oc := new(column)
+	e := new(element)
 	allowed := []node{h, oc}
-	forbidden := []node{c, nil}
+	forbidden := []node{c, nil, e}
 	for _, i := range allowed {
 		if n, err := c.setRgt(i); err != nil || n != i {
 			t.Error(i)
@@ -89,7 +91,8 @@ func TestColumnSetUp(t *testing.T) {
 	c := newColumn(testName, false)
 	h := New()
 	oc := new(column)
-	allowed := []node{c}
+	e := new(element)
+	allowed := []node{c, e}
 	forbidden := []node{h, oc, nil}
 	for _, i := range allowed {
 		if n, err := c.setUp(i); err != nil || n != i {
@@ -116,7 +119,8 @@ func TestColumnSetDn(t *testing.T) {
 	c := newColumn(testName, false)
 	h := New()
 	oc := new(column)
-	allowed := []node{c}
+	e := new(element)
+	allowed := []node{c, e}
 	forbidden := []node{h, oc, nil}
 	for _, i := range allowed {
 		if n, err := c.setDn(i); err != nil || n != i {
