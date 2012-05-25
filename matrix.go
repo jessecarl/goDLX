@@ -62,7 +62,7 @@ func linkHorz(a, b node) error {
 	return nil
 }
 
-// linkVert links a *new* up node to and *existing* down node as shown:
+// linkVert links a *new* up node to an *existing* down node as shown:
 //     +---+  +---+  +---+
 //     |   |  |   |  |   |
 //     |   |  | a |  | b |
