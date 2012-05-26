@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+type testMatrix struct {
+	ColCounts map[string]int
+	Cols      []string
+	Rows      [][]string
+	Solution  *testMatrix
+}
+
 // TestNew tests that creating a new Head actually does create a new Head.
 // Nothing to verify other than a lack of errors.
 func TestNew(t *testing.T) {
@@ -153,7 +160,36 @@ func TestHeadAddCol(t *testing.T) {
 	}
 }
 
-const testMatrix = `A,B,C,D,E,F,G
+func setupTestMatrix(full, solved string) (t *testMatrix) {
+	t = new(testMatrix)
+	t.ColCounts = make(map[string]int)
+	for i, r := range strings.Split(full, "\n") {
+		switch i {
+		case 0:
+			for _, cn := range strings.Split(r, ",") {
+				t.Cols = append(t.Cols, cn)
+				t.ColCounts[cn] = 0
+			}
+		default:
+			if len(r) > 0 {
+				row := []string{}
+				for j := range r {
+					if r[j] == '1' {
+						t.ColCounts[t.Cols[j]]++
+						row = append(row, t.Cols[j])
+					}
+				}
+				t.Rows = append(t.Rows, row)
+			}
+		}
+	}
+	if len(solved) > 0 {
+		t.Solution = setupTestMatrix(solved, "")
+	}
+	return t
+}
+
+const t1 = `A,B,C,D,E,F,G
 0010110
 1001001
 0110010
@@ -161,7 +197,7 @@ const testMatrix = `A,B,C,D,E,F,G
 0100001
 0001101
 `
-const solvedMatrix = `A,B,C,D,E,F,G
+const t1s = `A,B,C,D,E,F,G
 1001000
 0100001
 0010110
@@ -169,96 +205,86 @@ const solvedMatrix = `A,B,C,D,E,F,G
 
 func TestHeadAddRow(t *testing.T) {
 	h := New()
+	testMatrix := setupTestMatrix(t1, t1s)
 	// add the columns
-	colCounts := make(map[string]int)
-	cols := []string{}
-	eRows := [][]bool{}
-	rows := []bool{}
-	for i, r := range strings.Split(testMatrix, "\n") {
-		switch i {
-		case 0:
-			for _, cn := range strings.Split(r, ",") {
-				// construct actual
-				if err := h.AddCol(cn, false); err != nil {
-					t.Error(err)
-				}
-				// construct expected
-				colCounts[cn] = 0
-				cols = append(cols, cn)
-			}
-		default:
-			if len(r) > 0 {
-				row := []string{}
-				newRow := []bool{}
-				for j := range r {
-					if r[j] == '1' {
-						colCounts[cols[j]]++
-						row = append(row, cols[j])
-						newRow = append(newRow, true)
-					} else {
-						newRow = append(newRow, false)
-					}
-				}
-				if err := h.AddRow(row); err != nil {
-					t.Error(err)
-				}
-				eRows = append(eRows, newRow)
-				rows = append(rows, false)
-			}
+	for _, cn := range testMatrix.Cols {
+		// construct actual
+		if err := h.AddCol(cn, false); err != nil {
+			t.Error(err)
 		}
 	}
-	for n := h.rgt(); n != h; n = n.rgt() {
-		if c, ok := n.(*column); ok {
-			// asserts that the column counts are correct
-			if c.count() != colCounts[c.label()] {
-				t.Error(c)
+	// add the rows
+	for _, row := range testMatrix.Rows {
+		if err := h.AddRow(row); err != nil {
+			t.Error(err)
+		}
+	}
+	aRows := [][]string{}
+	rows := make([]bool, len(testMatrix.Rows))
+	for c, ok := h.rgt().(*column); ok; c, ok = c.rgt().(*column) {
+		// asserts that the column counts are correct
+		if c.count() != testMatrix.ColCounts[c.label()] {
+			t.Error(c)
+		}
+		// asserts that the rows exist
+		// note that because of the way these are stored, it is
+		// okay for a row to "exist" more than once
+		for r, kk := c.dn().(*element); kk; r, kk = r.dn().(*element) {
+			// construct the actual we can compare with
+			row := []string{r.colName()}
+			for e, oo := r.rgt().(*element); oo && node(e) != node(r); e, oo = e.rgt().(*element) {
+				row = append(row, e.colName())
 			}
-			// asserts that the rows exist
-			// note that because of the way these are stored, it is
-			// okay for a row to "exist" more than once
-			for r, kk := c.dn().(*element); kk; r, kk = r.dn().(*element) {
-				// construct the actual we can compare with
-				aRow := []bool{}
-				for _, cn := range cols {
-					if r.colName() == cn {
-						aRow = append(aRow, true)
-					} else {
-						hasCol := false
-						for e, oo := r.rgt().(*element); oo && (e != r); e = e.rgt().(*element) {
-							if e.colName() == cn {
-								hasCol = true
-								break
-							}
-						}
-						aRow = append(aRow, hasCol)
-					}
-				}
-				// find actual in expected
-				rowExists := false
-				for i := range eRows {
-					rowsMatch := true
-					for j := range eRows[i] {
-						if eRows[i][j] != aRow[j] {
-							rowsMatch = false
-							break
-						}
-					}
-					if rowsMatch {
-						rows[i] = true
-						rowExists = true
+			aRows = append(aRows, row)
+		}
+	}
+	for _, act := range aRows {
+		inExp := false
+		for r, exp := range testMatrix.Rows {
+			if len(act) != len(exp) {
+				continue
+			}
+			thisOne := true
+			for i := range act {
+				hasMatch := false
+				for j := range exp {
+					if act[i] == exp[j] {
+						hasMatch = true
 						break
 					}
 				}
-				if !rowExists {
-					t.Error(aRow)
+				if !hasMatch {
+					thisOne = false
+					break
 				}
 			}
+			for i := range exp {
+				hasMatch := false
+				for j := range act {
+					if exp[i] == act[j] {
+						hasMatch = true
+						break
+					}
+				}
+				if !hasMatch {
+					thisOne = false
+					break
+				}
+			}
+			if thisOne {
+				rows[r] = true
+				inExp = true
+				break
+			}
+		}
+		if !inExp {
+			t.Error(act)
 		}
 	}
 	// assert that all expected rows exist
 	for r := range rows {
 		if !rows[r] {
-			t.Error(eRows[r])
+			t.Error(testMatrix.Rows[r])
 		}
 	}
 }
