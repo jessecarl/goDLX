@@ -3,10 +3,11 @@ package goDLX
 import "errors"
 
 const (
-	e_head_set_horz = "Only column of Self can be left or right of Head"
-	e_head_set_vert = "No nodes can be above or below Head"
-	e_head_locked   = "All Columns must be added before any Rows"
-	e_head_row_fail = "Failed to add row to matrix"
+	e_head_set_horz    = "Only column of Self can be left or right of Head"
+	e_head_set_vert    = "No nodes can be above or below Head"
+	e_head_locked      = "All Columns must be added before any Rows"
+	e_head_row_fail    = "Failed to add row to matrix"
+	e_head_unique_cols = "Column names must be unique"
 )
 
 // Head nodes are the master column headers.
@@ -112,6 +113,11 @@ func (h *Head) col() node {
 func (h *Head) AddCol(name string, optional bool) error {
 	if h.locked {
 		return errors.New(e_head_locked)
+	}
+	for n, ok := h.rgt().(*column); ok; n, ok = n.rgt().(*column) {
+		if n.label() == name {
+			return errors.New(e_head_unique_cols)
+		}
 	}
 	c := newColumn(name, optional)
 	err := linkHorz(c, h)

@@ -147,6 +147,9 @@ func TestHeadAddCol(t *testing.T) {
 		if !assertCircleLft(h, i+2) || !assertCircleRgt(h, i+2) {
 			t.Errorf("Head.AddCol(name, optional): List no longer circular")
 		}
+		if err := h.AddCol(string(i), false); err == nil {
+			t.Error(e_head_unique_cols)
+		}
 	}
 }
 
