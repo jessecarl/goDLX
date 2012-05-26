@@ -168,41 +168,98 @@ func TestHeadAddRow(t *testing.T) {
 	h := New()
 	// add the columns
 	colCounts := make(map[string]int)
-	colCounts["A"] = 2
-	colCounts["B"] = 2
-	colCounts["C"] = 2
-	colCounts["D"] = 3
-	colCounts["E"] = 2
-	colCounts["F"] = 2
-	colCounts["G"] = 3
+	cols := []string{}
+	eRows := [][]bool{}
+	rows := []bool{}
 	for i, r := range strings.Split(testMatrix, "\n") {
 		switch i {
 		case 0:
 			for _, cn := range strings.Split(r, ",") {
+				// construct actual
 				if err := h.AddCol(cn, false); err != nil {
 					t.Error(err)
 				}
+				// construct expected
+				colCounts[cn] = 0
+				cols = append(cols, cn)
 			}
 		default:
 			if len(r) > 0 {
 				if err := h.AddRow(func(i int, n string) bool {
 					if r[i] == '1' {
+						colCounts[n]++
 						return true
 					}
 					return false
 				}); err != nil {
 					t.Error(err)
 				}
+				newRow := []bool{}
+				// construct expected
+				for _, x := range r {
+					if x == '1' {
+						newRow = append(newRow, true)
+					} else {
+						newRow = append(newRow, false)
+					}
+				}
+				eRows = append(eRows, newRow)
+				rows = append(rows, false)
 			}
 		}
 	}
-	// asserts that the column counts are correct
-	// not perfect, but a better test than many
 	for n := h.rgt(); n != h; n = n.rgt() {
 		if c, ok := n.(*column); ok {
+			// asserts that the column counts are correct
 			if c.count() != colCounts[c.label()] {
 				t.Error(c)
 			}
+			// asserts that the rows exist
+			// note that because of the way these are stored, it is
+			// okay for a row to "exist" more than once
+			for r, kk := c.dn().(*element); kk; r, kk = r.dn().(*element) {
+				// construct the actual we can compare with
+				aRow := []bool{}
+				for _, cn := range cols {
+					if r.colName() == cn {
+						aRow = append(aRow, true)
+					} else {
+						hasCol := false
+						for e, oo := r.rgt().(*element); oo && (e != r); e = e.rgt().(*element) {
+							if e.colName() == cn {
+								hasCol = true
+								break
+							}
+						}
+						aRow = append(aRow, hasCol)
+					}
+				}
+				// find actual in expected
+				rowExists := false
+				for i := range eRows {
+					rowsMatch := true
+					for j := range eRows[i] {
+						if eRows[i][j] != aRow[j] {
+							rowsMatch = false
+							break
+						}
+					}
+					if rowsMatch {
+						rows[i] = true
+						rowExists = true
+						break
+					}
+				}
+				if !rowExists {
+					t.Error(aRow)
+				}
+			}
+		}
+	}
+	// assert that all expected rows exist
+	for r := range rows {
+		if !rows[r] {
+			t.Error(eRows[r])
 		}
 	}
 }
