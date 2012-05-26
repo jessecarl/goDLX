@@ -118,3 +118,16 @@ func (c *column) setDn(n node) (node, error) {
 func (c *column) col() node {
 	return c
 }
+
+func (c *column) count() int {
+	i := 0
+	for n := c.dn(); n != c; n = n.dn() {
+		i++
+	}
+	c.size = i
+	return i
+}
+
+func (c *column) label() string {
+	return c.name
+}

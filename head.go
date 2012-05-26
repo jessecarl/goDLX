@@ -6,6 +6,7 @@ const (
 	e_head_set_horz = "Only column of Self can be left or right of Head"
 	e_head_set_vert = "No nodes can be above or below Head"
 	e_head_locked   = "All Columns must be added before any Rows"
+	e_head_row_fail = "Failed to add row to matrix"
 )
 
 // Head nodes are the master column headers.
@@ -115,4 +116,30 @@ func (h *Head) AddCol(name string, optional bool) error {
 	c := newColumn(name, optional)
 	err := linkHorz(c, h)
 	return err
+}
+
+// AddRow adds a row to the matrix
+// Each row is populated by adding links for every true returned
+// from the anonymous function whose arguments are the column
+// name and index. Once rows are added, the matrix is locked
+// and no further columns may be added.
+func (h *Head) AddRow(f func(int, string) bool) error {
+	h.locked = true // lock this matrix
+	// loop through the columns to check against
+	i := 0
+	var e *element
+	for n := h.rgt(); n != h; n = n.rgt() {
+		if c, ok := n.(*column); ok {
+			if f(i, c.name) {
+				e = newElement(e, c)
+			}
+		} else {
+			return errors.New(e_head_row_fail)
+		}
+		i++
+	}
+	if e == nil {
+		return errors.New(e_head_row_fail)
+	}
+	return nil
 }

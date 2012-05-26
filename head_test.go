@@ -1,6 +1,9 @@
 package goDLX
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 // TestNew tests that creating a new Head actually does create a new Head.
 // Nothing to verify other than a lack of errors.
@@ -143,6 +146,63 @@ func TestHeadAddCol(t *testing.T) {
 		h.AddCol(string(i), false)
 		if !assertCircleLft(h, i+2) || !assertCircleRgt(h, i+2) {
 			t.Errorf("Head.AddCol(name, optional): List no longer circular")
+		}
+	}
+}
+
+const testMatrix = `A,B,C,D,E,F,G
+0010110
+1001001
+0110010
+1001000
+0100001
+0001101
+`
+const solvedMatrix = `A,B,C,D,E,F,G
+1001000
+0100001
+0010110
+`
+
+func TestHeadAddRow(t *testing.T) {
+	h := New()
+	// add the columns
+	colCounts := make(map[string]int)
+	colCounts["A"] = 2
+	colCounts["B"] = 2
+	colCounts["C"] = 2
+	colCounts["D"] = 3
+	colCounts["E"] = 2
+	colCounts["F"] = 2
+	colCounts["G"] = 3
+	for i, r := range strings.Split(testMatrix, "\n") {
+		switch i {
+		case 0:
+			for _, cn := range strings.Split(r, ",") {
+				if err := h.AddCol(cn, false); err != nil {
+					t.Error(err)
+				}
+			}
+		default:
+			if len(r) > 0 {
+				if err := h.AddRow(func(i int, n string) bool {
+					if r[i] == '1' {
+						return true
+					}
+					return false
+				}); err != nil {
+					t.Error(err)
+				}
+			}
+		}
+	}
+	// asserts that the column counts are correct
+	// not perfect, but a better test than many
+	for n := h.rgt(); n != h; n = n.rgt() {
+		if c, ok := n.(*column); ok {
+			if c.count() != colCounts[c.label()] {
+				t.Error(c)
+			}
 		}
 	}
 }
