@@ -11,26 +11,14 @@ type element struct {
 	left, right, upup, down, colcol node
 }
 
-func newElement(r *element, c *column) *element {
-	e := new(element)
-	e.init(r, c)
-	return e
-}
-
-func (e *element) init(r *element, c *column) {
+func (e *element) init(c *column) {
 	e.left = e
 	e.right = e
 	e.upup = e
 	e.down = e
-	if r != nil {
-		// to the right
-		linkHorz(e, r.rgt())
-	}
-	if c != nil {
-		// above (at the bottom)
-		linkVert(e, c)
-		e.colcol = node(c)
-	}
+	// above (at the bottom)
+	linkVert(e, c)
+	e.colcol = node(c)
 }
 
 func (e *element) lft() node {

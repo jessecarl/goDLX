@@ -131,3 +131,9 @@ func (c *column) count() int {
 func (c *column) label() string {
 	return c.name
 }
+
+func (c *column) newElement() *element {
+	e := new(element)
+	e.init(c)
+	return e
+}

@@ -188,23 +188,19 @@ func TestHeadAddRow(t *testing.T) {
 			}
 		default:
 			if len(r) > 0 {
-				if err := h.AddRow(func(i int, n string) bool {
-					if r[i] == '1' {
-						colCounts[n]++
-						return true
-					}
-					return false
-				}); err != nil {
-					t.Error(err)
-				}
+				row := []string{}
 				newRow := []bool{}
-				// construct expected
-				for _, x := range r {
-					if x == '1' {
+				for j := range r {
+					if r[j] == '1' {
+						colCounts[cols[j]]++
+						row = append(row, cols[j])
 						newRow = append(newRow, true)
 					} else {
 						newRow = append(newRow, false)
 					}
+				}
+				if err := h.AddRow(row); err != nil {
+					t.Error(err)
 				}
 				eRows = append(eRows, newRow)
 				rows = append(rows, false)

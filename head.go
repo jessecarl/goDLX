@@ -102,6 +102,16 @@ func (h *Head) col() node {
 	return h
 }
 
+// colByName returns pointer to the column header or nil if no such column exists
+func (h *Head) colByName(name string) *column {
+	for c, ok := h.rgt().(*column); ok; c, ok = c.rgt().(*column) {
+		if name == c.label() {
+			return c
+		}
+	}
+	return nil
+}
+
 ////
 // Populating the Matrix
 ////
@@ -125,22 +135,36 @@ func (h *Head) AddCol(name string, optional bool) error {
 }
 
 // AddRow adds a row to the matrix
-// Each row is populated by adding links for every true returned
-// from the anonymous function whose arguments are the column
-// name and index. Once rows are added, the matrix is locked
-// and no further columns may be added.
-func (h *Head) AddRow(f func(int, string) bool) error {
+// Each row is populated by adding links for every column
+// named in the cols array. Once rows are added, the matrix
+// is locked and no further columns may be added.
+func (h *Head) AddRow(cols []string) error {
 	h.locked = true // lock this matrix
-	// loop through the columns to check against
-	i := 0
-	var e *element
-	for c, ok := h.rgt().(*column); ok; c, ok = c.rgt().(*column) {
-		if f(i, c.name) {
-			e = newElement(e, c)
+	// map new elements to the columns as linked to columns
+	elements := map[string](*element){}
+	for _, name := range cols {
+		if c := h.colByName(name); c != nil {
+			elements[name] = c.newElement()
+		} else {
+			return errors.New(e_head_row_fail)
 		}
-		i++
 	}
-	if e == nil {
+	// link elements together into a row
+	// if there is a better way to do this where we don't have to loop through the
+	// entire set of column headers, I would love to use that
+	var row *element
+	for c, ok := h.rgt().(*column); ok; c, ok = c.rgt().(*column) {
+		if e := elements[c.label()]; e != nil {
+			if row == nil {
+				row = e
+			} else {
+				if err := linkHorz(e, row); err != nil {
+					return errors.New(e_head_row_fail)
+				}
+			}
+		}
+	}
+	if row == nil {
 		return errors.New(e_head_row_fail)
 	}
 	return nil
