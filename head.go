@@ -128,13 +128,9 @@ func (h *Head) AddRow(f func(int, string) bool) error {
 	// loop through the columns to check against
 	i := 0
 	var e *element
-	for n := h.rgt(); n != h; n = n.rgt() {
-		if c, ok := n.(*column); ok {
-			if f(i, c.name) {
-				e = newElement(e, c)
-			}
-		} else {
-			return errors.New(e_head_row_fail)
+	for c, ok := h.rgt().(*column); ok; c, ok = c.rgt().(*column) {
+		if f(i, c.name) {
+			e = newElement(e, c)
 		}
 		i++
 	}
