@@ -53,6 +53,13 @@ func (e *element) col() node {
 	return e.colcol
 }
 
+func (e *element) colName() string {
+	if c, ok := e.col().(*column); ok {
+		return c.label()
+	}
+	return ""
+}
+
 func (e *element) setLft(n node) (node, error) {
 	switch n.(type) {
 	case *element:
