@@ -120,12 +120,7 @@ func (c *column) col() node {
 }
 
 func (c *column) count() int {
-	i := 0
-	for n := c.dn(); n != c; n = n.dn() {
-		i++
-	}
-	c.size = i
-	return i
+	return c.size
 }
 
 func (c *column) label() string {
@@ -135,5 +130,6 @@ func (c *column) label() string {
 func (c *column) newElement() *element {
 	e := new(element)
 	e.init(c)
+	c.size++
 	return e
 }
