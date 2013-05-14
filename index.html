@@ -36,32 +36,48 @@
         <span class="blc"></span><span class="trc"></span>
         </div>
         <article class="markdown-body">
-          <h3>Welcome to GitHub Pages.</h3>
+          <h1>Package</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>package goDLX</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<pre><code>import "github.com/jessecarl/goDLX"
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Package goDLX provides a Go implementation of Dancing Links Algorithm X
+by Donald Knuth.</p>
 
-<h3>Designer Templates</h3>
+<p>I'm attempting to follow the paper as exactly as possible to start. I
+can cater it a bit more to to <a href="http://golang.org">Go</a> way of solving the
+problem once the initial implementation is complete.</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<h1>Types</h1>
 
-<h3>Rather Drive Stick?</h3>
+<pre><code>type Head struct {
+    // contains filtered or unexported fields
+}
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Head nodes are the master column headers. These nodes form the heart of
+each sparse matrix</p>
 
-<h3>Authors and Contributors</h3>
+<pre><code>func New() *Head
+</code></pre>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>New starts a new sparse matrix by creating the Head node.</p>
 
-<h3>Support or Contact</h3>
+<pre><code>func (h *Head) AddCol(name string, optional bool) error
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>AddCol adds a Column to the matrix. Each column has a name for reference
+and can be set to optional. Where required columns have one and only one
+valid row, optional columns have zero or one valid row.</p>
+
+<pre><code>func (h *Head) AddRow(cols []string) error
+</code></pre>
+
+<p>AddRow adds a row to the matrix Each row is populated by adding links
+for every column named in the cols array. Once rows are added, the
+matrix is locked and no further columns may be added.</p>
         </article>
       </div>
     </div>
